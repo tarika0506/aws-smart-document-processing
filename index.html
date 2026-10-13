@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Document Intelligence</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">SD</div>
+        <div>
+          <h1>Smart Document</h1>
+          <p>AWS Architecture Simulator</p>
+        </div>
+      </div>
+
+      <nav id="mainNav">
+        <button class="nav-item active" data-page="dashboard">Dashboard</button>
+        <button class="nav-item" data-page="s3">Upload</button>
+        <button class="nav-item" data-page="eventbridge">EventBridge</button>
+        <button class="nav-item" data-page="lambda">Lambda</button>
+        <button class="nav-item" data-page="dynamodb">DB</button>
+        <button class="nav-item" data-page="sns">SNS Notifications</button>
+        <button class="nav-item" data-page="detector">Duplicate Detector</button>
+        <button class="nav-item" data-page="activity">Activity Log</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="simulation-badge">SIMULATION MODE</div>
+        <p>No AWS credentials are used. The browser simulates the AWS workflow.</p>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">AWS Cloud Service Simulation</span>
+          <h2 id="pageTitle">Smart Document Intelligence</h2>
+        </div>
+        <div class="topbar-actions">
+          <div class="notification-wrap">
+            <button id="notificationBell" class="notification-bell" aria-label="Open notifications">
+              <span class="bell-icon">Notifications</span>
+              <span id="notificationCount" class="notification-count">0</span>
+            </button>
+            <div id="notificationPanel" class="notification-panel hidden">
+              <div class="notification-panel-header">
+                <div><strong>Notifications</strong><span id="notificationPanelSub">SNS alerts</span></div>
+                <button id="markNotificationsRead" class="text-btn">Mark read</button>
+              </div>
+              <div id="notificationFeed"></div>
+            </div>
+          </div>
+          <span class="status-dot"></span>
+          <span>System Ready</span>
+          <button id="resetBtn" class="secondary-btn">Reset Simulation</button>
+        </div>
+      </header>
+
+      <section id="dashboard" class="page active">
+        <div class="hero">
+          <div>
+            <span class="eyebrow">S3 + EventBridge + Lambda + DynamoDB + SNS</span>
+            <h3>Smart Document Processing & Duplicate Detection</h3>
+            <p>
+              Upload documents into the simulated S3 bucket. The application then
+              processes an event-driven workflow and detects exact or near-duplicate files.
+            </p>
+          </div>
+          <label class="primary-btn upload-label">
+            Upload Document
+            <input id="dashboardFileInput" type="file" multiple hidden>
+          </label>
+        </div>
+
+        <div class="stats-grid" id="dashboardStats"></div>
+
+        <div class="content-grid two-col">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Processing Pipeline</h3>
+                <p>Simulated event-driven AWS architecture</p>
+              </div>
+            </div>
+            <div class="pipeline">
+              <div class="pipeline-step"><span>1</span><strong>Storage</strong><small>Object uploaded</small></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><span>2</span><strong>EventBridge</strong><small>Event routed</small></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><span>3</span><strong>Lambda</strong><small>Process document</small></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><span>4</span><strong>DB</strong><small>Store metadata</small></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step"><span>5</span><strong>SNS</strong><small>Notify user</small></div>
+            </div>
+          </div>
+
+          <div class="panel enhancement-panel">
+            <div class="panel-header">
+              <div>
+                <span class="enhancement-tag">UNIQUE ENHANCEMENT</span>
+                <h3>Duplicate & Version Intelligence</h3>
+                <p>Finds exact duplicates and likely versions of the same document.</p>
+              </div>
+            </div>
+            <div class="enhancement-list">
+              <div><strong>Exact duplicate</strong><span>SHA-256 content match</span></div>
+              <div><strong>Near duplicate</strong><span>Filename + size similarity</span></div>
+              <div><strong>Storage insight</strong><span>Potential duplicate storage savings</span></div>
+              <div><strong>Recommendation</strong><span>Keep latest or review before storing</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-grid two-col">
+          <div class="panel">
+            <div class="panel-header">
+              <div><h3>Recent Documents</h3><p>Latest objects entering the simulated bucket</p></div>
+              <button class="text-btn" data-go="s3">View S3 Bucket</button>
+            </div>
+            <div id="recentDocuments"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <div><h3>Recent Alerts</h3><p>SNS-style notifications from the processor</p></div>
+              <button class="text-btn" data-go="sns">View Alerts</button>
+            </div>
+            <div id="recentAlerts"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s3" class="page">
+        <div class="page-intro">
+          <div><span class="eyebrow">Amazon S3</span><h3>Document Bucket</h3><p>Simulated object storage. Upload files and inspect their object metadata.</p></div>
+          <label class="primary-btn upload-label">Upload Document<input id="s3FileInput" type="file" multiple hidden></label>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <input id="s3Search" class="search-input" placeholder="Search object name...">
+            <select id="s3TypeFilter" class="select-input">
+              <option value="all">All file types</option>
+              <option value="pdf">PDF</option>
+              <option value="doc">DOC/DOCX</option>
+              <option value="xls">XLS/XLSX</option>
+              <option value="ppt">PPT/PPTX</option>
+              <option value="image">Images</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div id="s3Table"></div>
+        </div>
+      </section>
+
+      <section id="eventbridge" class="page">
+        <div class="page-intro"><div><span class="eyebrow">Amazon EventBridge</span><h3>Event Router</h3><p>Every simulated S3 upload produces an event that is routed to the document-processing target.</p></div></div>
+        <div class="stats-grid" id="eventStats"></div>
+        <div class="panel"><div class="panel-header"><div><h3>Event Bus</h3><p>Recent Object Created events</p></div></div><div id="eventTable"></div></div>
+      </section>
+
+      <section id="lambda" class="page">
+        <div class="page-intro"><div><span class="eyebrow">AWS Lambda</span><h3>Document Processor</h3><p>Simulates serverless processing triggered by the EventBridge object-created event.</p></div></div>
+        <div class="stats-grid" id="lambdaStats"></div>
+        <div class="content-grid two-col">
+          <div class="panel">
+            <div class="panel-header"><div><h3>Function Configuration</h3><p>Simulated function metadata</p></div></div>
+            <div class="config-list">
+              <div><span>Function</span><strong>DocumentProcessor</strong></div>
+              <div><span>Trigger</span><strong>S3 Object Created</strong></div>
+              <div><span>Runtime</span><strong>Node.js simulation</strong></div>
+              <div><span>Actions</span><strong>Hash → Metadata → Duplicate Analysis</strong></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div><h3>Processing Results</h3><p>Latest Lambda executions</p></div></div>
+            <div id="lambdaTable"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="dynamodb" class="page">
+        <div class="page-intro"><div><span class="eyebrow">Amazon DynamoDB</span><h3>Document Metadata Table</h3><p>Simulates storing document metadata and duplicate-analysis results.</p></div></div>
+        <div class="panel">
+          <div class="toolbar"><input id="ddbSearch" class="search-input" placeholder="Search document metadata..."></div>
+          <div id="ddbTable"></div>
+        </div>
+      </section>
+
+      <section id="sns" class="page">
+        <div class="page-intro"><div><span class="eyebrow">Amazon SNS</span><h3>Notification Center</h3><p>Simulates publishing important processing and duplicate-detection notifications.</p></div></div>
+        <div class="stats-grid" id="snsStats"></div>
+        <div class="panel"><div class="panel-header"><div><h3>Published Notifications</h3><p>Simulated SNS messages</p></div></div><div id="snsTable"></div></div>
+      </section>
+
+      <section id="detector" class="page">
+        <div class="page-intro">
+          <div><span class="eyebrow">Unique Enhancement</span><h3>Duplicate & Version Detector</h3><p>Analyzes uploaded documents and estimates whether they are exact duplicates or likely versions.</p></div>
+        </div>
+        <div class="detector-banner">
+          <div><span class="enhancement-tag">CUSTOM INTELLIGENCE LAYER</span><h3>Storage Optimization Intelligence</h3><p>The AWS services handle storage, events, processing, persistence and notifications. This layer adds document similarity analysis and storage-saving recommendations.</p></div>
+        </div>
+        <div class="stats-grid" id="detectorStats"></div>
+        <div class="panel"><div class="panel-header"><div><h3>Detected Relationships</h3><p>Exact duplicates and near-duplicate/version candidates</p></div></div><div id="duplicateTable"></div></div>
+      </section>
+
+      <section id="activity" class="page">
+        <div class="page-intro"><div><span class="eyebrow">System Activity</span><h3>Activity Log</h3><p>Trace the simulated workflow from upload to final notification.</p></div></div>
+        <div class="panel"><div id="activityTimeline"></div></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <script src="script.js"></script>
+</body>
+</html>
